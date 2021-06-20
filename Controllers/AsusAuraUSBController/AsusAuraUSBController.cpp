@@ -22,9 +22,8 @@ AuraUSBController::AuraUSBController(hid_device* dev_handle, const char* path)
 
 AuraUSBController::~AuraUSBController()
 {
-
+    hid_close(dev);
 }
-
 unsigned int AuraUSBController::GetChannelCount()
 {
     return(device_info.size());
@@ -43,7 +42,12 @@ std::string AuraUSBController::GetDeviceName()
 std::string AuraUSBController::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
@@ -95,11 +99,9 @@ void AuraUSBController::GetConfigTable()
         }
     }
     else
-    {
-        if(dev)
-        {
-            hid_close(dev);
-        }
+    {       
+        hid_close(dev);
+
         throw std::runtime_error("Could not read config table");
     }
 }

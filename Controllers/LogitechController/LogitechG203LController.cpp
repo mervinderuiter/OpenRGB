@@ -8,6 +8,11 @@ LogitechG203LController::LogitechG203LController(hid_device* dev_handle, const c
     location    = path;
 }
 
+LogitechG203LController::~LogitechG203LController()
+{
+    hid_close(dev);
+}
+
 std::string LogitechG203LController::GetDeviceLocation()
 {
     return("HID: " + location);
@@ -16,7 +21,12 @@ std::string LogitechG203LController::GetDeviceLocation()
 std::string LogitechG203LController::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());

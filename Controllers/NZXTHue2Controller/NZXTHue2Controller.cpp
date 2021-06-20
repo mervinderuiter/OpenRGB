@@ -29,7 +29,7 @@ NZXTHue2Controller::NZXTHue2Controller(hid_device* dev_handle, unsigned int rgb_
 
 NZXTHue2Controller::~NZXTHue2Controller()
 {
-
+    hid_close(dev);
 }
 
 unsigned char NZXTHue2Controller::GetFanCommand
@@ -71,7 +71,12 @@ std::string NZXTHue2Controller::GetFirmwareVersion()
 std::string NZXTHue2Controller::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
@@ -170,6 +175,10 @@ void NZXTHue2Controller::UpdateDeviceList()
                 num_leds_on_channel += 6;
                 break;
             
+            case 0x0A: //Hue 2 Underglow (200mm) (10 LEDs)
+                num_leds_on_channel += 10;
+                break;
+
             case 0x0B: //Aer 2 fan (120mm)
                 num_leds_on_channel += 8;
                 break;

@@ -27,6 +27,7 @@ typedef struct
 msi_device compatible_devices[] =
 {
     {"7A40", false},
+    {"7A34", false},
     {"7A39", false},
     {"7A38", false},
     {"7B79", false},
@@ -82,7 +83,7 @@ void DetectMSIRGBControllers(std::vector<RGBController*> &rgb_controllers)
     std::string board_dmi = board.getMainboard(); 
     std::string manufacturer = board.getManufacturer();
 
-    if (manufacturer != "Micro-Star International Co., Ltd.")
+    if (manufacturer != "Micro-Star International Co., Ltd." && manufacturer != "Micro-Star International Co., Ltd")
     {
         return;
     }
@@ -105,7 +106,7 @@ void DetectMSIRGBControllers(std::vector<RGBController*> &rgb_controllers)
                 {
                     MSIRGBController*     new_msi = new MSIRGBController(sioaddr, compatible_devices[i].invert);
                     RGBController_MSIRGB* new_rgb = new RGBController_MSIRGB(new_msi);
-
+                    new_rgb->name = "MSI " + board_dmi;
                     rgb_controllers.push_back(new_rgb);
                     break;
                 }

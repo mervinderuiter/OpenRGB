@@ -19,7 +19,7 @@ AuraMouseController::AuraMouseController(hid_device* dev_handle, const char* pat
 
 AuraMouseController::~AuraMouseController()
 {
-
+    hid_close(dev);
 }
 
 std::string AuraMouseController::GetDeviceLocation()
@@ -30,7 +30,12 @@ std::string AuraMouseController::GetDeviceLocation()
 std::string AuraMouseController::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());

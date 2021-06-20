@@ -16,6 +16,11 @@ HoltekA070Controller::HoltekA070Controller(hid_device* dev_handle, const char* p
     location    = path;
 }
 
+HoltekA070Controller::~HoltekA070Controller()
+{
+    hid_close(dev);
+}
+
 std::string HoltekA070Controller::GetDeviceLocation()
 {
     return("HID: " + location);
@@ -24,7 +29,12 @@ std::string HoltekA070Controller::GetDeviceLocation()
 std::string HoltekA070Controller::GetSerialString()
 {
     wchar_t serial_string[128];
-    hid_get_serial_number_string(dev, serial_string, 128);
+    int ret = hid_get_serial_number_string(dev, serial_string, 128);
+
+    if(ret != 0)
+    {
+        return("");
+    }
 
     std::wstring return_wstring = serial_string;
     std::string return_string(return_wstring.begin(), return_wstring.end());
